@@ -14,6 +14,17 @@ conceptual document; the code that implements it lands layer by layer, see
 the commit history for progress. This README will keep growing (build/run/
 test instructions, scope, screenshots) as each layer lands.
 
+### Implementation progress
+
+- [x] Project scaffold (CMake, compiling skeleton)
+- [x] Data layer (`Product`, `Supplier`, `Transaction`)
+- [x] Persistence layer
+- [ ] Logic layer (`Inventory`)
+- [ ] CLI
+- [ ] Tests
+- [ ] Optional GUI with product photos
+- [ ] ER diagram, codebook, screenshots
+
 ## Data model
 
 Three domain classes cover the required scope. `Product` holds a SKU, name,
@@ -50,7 +61,7 @@ rebuilding the in-memory vectors and SKU index on load.
 *Figure 2. Layered architecture, entity storage, and persistence flow.
 Source: own illustration.*
 
-## Build (once source files exist)
+## Build
 
 ```bash
 mkdir -p build && cd build

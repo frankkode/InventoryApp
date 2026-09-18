@@ -11,12 +11,11 @@ endif()
 
 add_compile_options(-Wall -Wextra)
 
-# Everything except main(), so the CLI and the test executable (added in a
-# later commit) can both link against the same code with nothing duplicated.
 add_library(inventory_core
     src/Product.cpp
     src/Supplier.cpp
     src/Transaction.cpp
+    src/Persistence.cpp
 )
 target_include_directories(inventory_core PUBLIC include)
 
