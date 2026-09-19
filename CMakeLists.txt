@@ -16,6 +16,7 @@ add_library(inventory_core
     src/Supplier.cpp
     src/Transaction.cpp
     src/Persistence.cpp
+    src/Inventory.cpp
 )
 target_include_directories(inventory_core PUBLIC include)
 

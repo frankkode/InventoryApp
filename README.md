@@ -19,7 +19,7 @@ test instructions, scope, screenshots) as each layer lands.
 - [x] Project scaffold (CMake, compiling skeleton)
 - [x] Data layer (`Product`, `Supplier`, `Transaction`)
 - [x] Persistence layer
-- [ ] Logic layer (`Inventory`)
+- [x] Logic layer (`Inventory`)
 - [ ] CLI
 - [ ] Tests
 - [ ] Optional GUI with product photos
