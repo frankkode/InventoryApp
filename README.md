@@ -11,8 +11,7 @@ Repository: [GitHub repository is here](https://github.com/frankkode/InventoryAp
 This project is being built incrementally, one reviewed commit at a time.
 The data model and architecture below reflect the design from the Phase 1
 conceptual document; the code that implements it lands layer by layer, see
-the commit history for progress. This README will keep growing (test
-instructions, scope, screenshots) as each layer lands.
+the commit history for progress.
 
 ### Implementation progress
 
@@ -21,7 +20,7 @@ instructions, scope, screenshots) as each layer lands.
 - [x] Persistence layer
 - [x] Logic layer (`Inventory`)
 - [x] CLI
-- [ ] Tests
+- [x] Tests
 - [ ] Optional GUI with product photos
 - [ ] ER diagram, codebook, screenshots
 
@@ -74,3 +73,23 @@ cmake --build .
 `suppliers.dat`, and `transactions.dat` from whichever directory you run it
 from (so from `build/`, those files appear there), creating them on first
 use.
+
+## Tests
+
+```bash
+cd build
+./inventory_tests
+```
+
+or, via CTest:
+
+```bash
+cd build
+ctest --output-on-failure
+```
+
+`inventory_tests` is a plain-assertion suite (no external framework)
+covering input validation, duplicate/unknown-SKU and unknown-supplier
+rejection, stock movements (including the guard against a stock-out
+dropping quantity below zero), search, sort, and a save/reload persistence
+round trip that exercises the comma/quote escaping described above.

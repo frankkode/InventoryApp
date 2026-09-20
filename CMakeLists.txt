@@ -22,3 +22,11 @@ target_include_directories(inventory_core PUBLIC include)
 
 add_executable(inventory src/main.cpp)
 target_link_libraries(inventory PRIVATE inventory_core)
+
+# Test binary: plain assertions, no external framework, linked against the
+# exact same inventory_core the CLI uses.
+add_executable(inventory_tests tests/test_inventory.cpp)
+target_link_libraries(inventory_tests PRIVATE inventory_core)
+
+enable_testing()
+add_test(NAME inventory_tests COMMAND inventory_tests)
