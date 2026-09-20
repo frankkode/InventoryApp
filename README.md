@@ -11,8 +11,8 @@ Repository: [GitHub repository is here](https://github.com/frankkode/InventoryAp
 This project is being built incrementally, one reviewed commit at a time.
 The data model and architecture below reflect the design from the Phase 1
 conceptual document; the code that implements it lands layer by layer, see
-the commit history for progress. This README will keep growing (build/run/
-test instructions, scope, screenshots) as each layer lands.
+the commit history for progress. This README will keep growing (test
+instructions, scope, screenshots) as each layer lands.
 
 ### Implementation progress
 
@@ -20,7 +20,7 @@ test instructions, scope, screenshots) as each layer lands.
 - [x] Data layer (`Product`, `Supplier`, `Transaction`)
 - [x] Persistence layer
 - [x] Logic layer (`Inventory`)
-- [ ] CLI
+- [x] CLI
 - [ ] Tests
 - [ ] Optional GUI with product photos
 - [ ] ER diagram, codebook, screenshots
@@ -61,10 +61,16 @@ rebuilding the in-memory vectors and SKU index on load.
 *Figure 2. Layered architecture, entity storage, and persistence flow.
 Source: own illustration.*
 
-## Build
+## Build and run
 
 ```bash
 mkdir -p build && cd build
 cmake ..
 cmake --build .
+./inventory
 ```
+
+`inventory` is an interactive text menu. It reads `products.dat`,
+`suppliers.dat`, and `transactions.dat` from whichever directory you run it
+from (so from `build/`, those files appear there), creating them on first
+use.
