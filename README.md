@@ -21,16 +21,17 @@ the commit history for progress.
 - [x] Logic layer (`Inventory`)
 - [x] CLI
 - [x] Tests
-- [ ] Optional GUI with product photos
+- [x] Optional GUI with product photos
 - [ ] ER diagram, codebook, screenshots
 
 ## Data model
 
 Three domain classes cover the required scope. `Product` holds a SKU, name,
-category, unit price, quantity on hand, reorder threshold, and a supplier
-reference. `Supplier` holds an ID, name, and contact details. `Transaction`
-holds an ID, timestamp, the affected product's SKU, a type (stock-in,
-stock-out, or adjustment), a quantity delta, and a note.
+category, unit price, quantity on hand, reorder threshold, a supplier
+reference, and an optional image path used by the GUI. `Supplier` holds an
+ID, name, and contact details. `Transaction` holds an ID, timestamp, the
+affected product's SKU, a type (stock-in, stock-out, or adjustment), a
+quantity delta, and a note.
 
 A `Supplier` can supply many `Product`s, and every `Transaction` updates
 exactly one `Product`'s quantity. `Inventory` owns the lifetime of every
@@ -48,12 +49,15 @@ enumeration. Source: own illustration.*
 
 ## Architecture
 
-The system follows a three-layer design. The interface layer (`main.cpp`)
-is a CLI menu for add/edit/remove, recording stock movements, search, sort,
+The system follows a three-layer design. The interface layer (`main.cpp`,
+plus the optional `src/gui/GuiMain.cpp`) is a CLI menu, and now also a
+desktop GUI, for add/edit/remove, recording stock movements, search, sort,
 and reporting. The logic layer (`Inventory.cpp`) validates every input and
 performs search, sort, and report generation. The persistence layer
 (`Persistence.cpp`) owns all file I/O, saving after every mutating call and
-rebuilding the in-memory vectors and SKU index on load.
+rebuilding the in-memory vectors and SKU index on load. Both interfaces
+call through the same `Inventory` and read/write the same three data
+files, so they are interchangeable on one inventory folder.
 
 ![Layered architecture, entity storage, and persistence flow](docs/diagrams/architecture-diagram.png)
 
@@ -93,3 +97,37 @@ covering input validation, duplicate/unknown-SKU and unknown-supplier
 rejection, stock movements (including the guard against a stock-out
 dropping quantity below zero), search, sort, and a save/reload persistence
 round trip that exercises the comma/quote escaping described above.
+
+## Optional GUI
+
+```bash
+cd build
+./inventory_gui
+```
+
+`inventory_gui` is a Dear ImGui + GLFW + OpenGL3 desktop window built on
+the exact same `Inventory`/`Persistence` core as the CLI, so it reads and
+writes the same data files and either interface can be used on the same
+folder. Tabs mirror the CLI menu:
+
+- **Products**: add a product (with a "Browse..." button that opens the
+  OS's native file picker to choose a photo from disk, rather than typing
+  a path), edit or remove any existing product, with removal behind a
+  confirmation dialog. The table shows a photo thumbnail per row and
+  highlights rows at or below their reorder threshold in red.
+- **Suppliers**: add or remove a supplier (also behind a confirmation
+  dialog); a removal is rejected, with the error shown in the GUI, if any
+  product still references that supplier.
+- **Stock movement**: record a stock-in, stock-out, or adjustment against
+  any product.
+- **Transactions**: the full transaction history.
+
+The task requires only a CLI; the GUI is the explicitly allowed optional
+extension. It builds automatically alongside `inventory` and
+`inventory_tests` (CMake fetches GLFW, Dear ImGui, stb_image, and
+tinyfiledialogs the first time, which needs an internet connection and
+takes a bit longer than a normal build) and can be turned off with:
+
+```bash
+cmake .. -DINVENTORY_BUILD_GUI=OFF
+```
