@@ -126,8 +126,8 @@ folder. Tabs mirror the CLI menu:
   any product.
 - **Transactions**: the full transaction history.
 
-The task requires only a CLI; the GUI is the explicitly allowed optional
-extension. It builds automatically alongside `inventory` and
+The CLI above is the primary interface; this GUI is an optional add-on
+built on the same core. It builds automatically alongside `inventory` and
 `inventory_tests` (CMake fetches GLFW, Dear ImGui, stb_image, and
 tinyfiledialogs the first time, which needs an internet connection and
 takes a bit longer than a normal build) and can be turned off with:

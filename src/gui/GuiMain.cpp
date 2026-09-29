@@ -1,7 +1,6 @@
-// Optional GUI: a Dear ImGui + GLFW + OpenGL3 desktop window over the same
-// Inventory/Persistence core the CLI uses. The task only requires a CLI;
-// this is the explicitly allowed optional extension, built so that either
-// interface can be pointed at the same three data files interchangeably.
+// Desktop GUI: a Dear ImGui + GLFW + OpenGL3 window over the same
+// Inventory/Persistence core the CLI uses, so either interface can be
+// pointed at the same three data files interchangeably.
 
 #define GL_SILENCE_DEPRECATION
 #include <GLFW/glfw3.h>

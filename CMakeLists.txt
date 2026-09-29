@@ -32,19 +32,15 @@ enable_testing()
 add_test(NAME inventory_tests COMMAND inventory_tests)
 
 # ---------------------------------------------------------------------------
-# Optional GUI (Dear ImGui + GLFW + OpenGL3, with a native file picker for
-# product photos via tinyfiledialogs).
+# Optional desktop GUI (Dear ImGui + GLFW + OpenGL3, with a native file
+# picker for product photos via tinyfiledialogs).
 #
-# The task only requires a CLI ("a command-line menu is sufficient; a
-# graphical interface is optional and not required"); the `inventory`
-# target above already satisfies that on its own. This target is the
-# explicitly allowed optional extension: a desktop window built on the
-# exact same inventory_core the CLI uses, reading and writing the same
-# three data files, so either interface can be used interchangeably on
-# one inventory folder. It is on by default but can be turned off with
-# -DINVENTORY_BUILD_GUI=OFF, and auto-disables itself with a warning if
-# OpenGL isn't found, so the required CLI/tests build is never put at
-# risk by the GUI's extra dependencies.
+# Built on the exact same inventory_core the CLI uses, so it reads and
+# writes the same three data files and either interface can be used
+# interchangeably on one inventory folder. On by default, but can be
+# turned off with -DINVENTORY_BUILD_GUI=OFF, and auto-disables itself
+# with a warning if OpenGL isn't found, so a missing OpenGL install never
+# breaks the CLI/tests build.
 # ---------------------------------------------------------------------------
 option(INVENTORY_BUILD_GUI "Build the optional Dear ImGui desktop interface" ON)
 

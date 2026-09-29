@@ -14,10 +14,9 @@
 // wrapped in double quotes only when it contains a comma, a quote, a
 // backslash, or a newline; inside a quoted field, a backslash and a double
 // quote are escaped as \\ and \", and an embedded newline as \n, the same
-// escaping principle JSON string literals use (Bray, 2017). This keeps the
-// common case (no special characters) readable as plain text, while a
-// supplier name or note that happens to contain a comma still round-trips
-// exactly.
+// escaping principle JSON string literals use. This keeps the common case
+// (no special characters) readable as plain text, while a supplier name or
+// note that happens to contain a comma still round-trips exactly.
 //
 // A missing file is not an error, load simply returns an empty vector,
 // which is what a first run looks like. A line that fails to parse is
