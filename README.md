@@ -2,7 +2,7 @@
 
 C/C++ course project, Task 3 (DLBMINPAPCC01_E, IU Internationale Hochschule).
 Author: Masabo Frank,
-Matriculation No. 321147823.
+
 
 Repository: [GitHub repository is here](https://github.com/frankkode/InventoryApp)
 
@@ -21,8 +21,8 @@ the commit history for progress.
 - [x] Logic layer (`Inventory`)
 - [x] CLI
 - [x] Tests
-- [x] Optional GUI with product photos
-- [ ] ER diagram, codebook, screenshots
+- [x] GUI with product photos
+- [x] ER diagram, codebook, screenshots
 
 ## Data model
 
@@ -46,6 +46,10 @@ reallocates during growth.
 *Figure 1. UML class diagram: class attributes, key operations, composition
 relationships, associations with multiplicities, and the `TransactionType`
 enumeration. Source: own illustration.*
+
+See [`codebook.md`](codebook.md) for the full write-up of the memory model,
+on-disk file format, validation rules, and the two GUI defects found and
+fixed during manual testing.
 
 ## Architecture
 
@@ -131,3 +135,43 @@ takes a bit longer than a normal build) and can be turned off with:
 ```bash
 cmake .. -DINVENTORY_BUILD_GUI=OFF
 ```
+
+
+## Screenshots
+
+All of the following are captured from real runs of the application on the
+development machine, not mock-ups.
+
+![Products tab: add form with auto-generated SKU, the live catalogue, and stock levels](docs/screenshots/Products.png)
+
+*Figure 3. The Products tab: add form with auto-generated SKU, the live
+catalogue, and stock levels.*
+
+![Editing a product](docs/screenshots/edit-product.png)
+
+*Figure 4. Editing a product: the confirmation popup, reached from any row
+in the catalogue.*
+
+![Supplier management](docs/screenshots/Suppliers.png)
+
+*Figure 5. Supplier management: the add flow and the supplier list.*
+
+![Stock movement tab](docs/screenshots/stock-movement.png)
+
+*Figure 6. The Stock movement tab: product SKU, type, quantity, and an
+optional note.*
+
+![Stock movement confirmation](docs/screenshots/stockin-confirmed.png)
+
+*Figure 7. The confirmation banner and the updated quantity on hand,
+applied immediately after recording a movement.*
+
+![Transaction history](docs/screenshots/Transactions.png)
+
+*Figure 8. Transaction history for a working session: additions, edits,
+and stock movements, all persisted.*
+
+![Low-stock report](docs/screenshots/low-stock-report.png)
+
+*Figure 9. The CLI's low-stock report (Reports → Low stock), printed from
+a live run.*
