@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 
+// Returns the label used for a type on screen and in the data file.
 std::string toString(TransactionType type) {
     switch (type) {
         case TransactionType::StockIn:
@@ -14,6 +15,7 @@ std::string toString(TransactionType type) {
     throw std::invalid_argument("unknown TransactionType");
 }
 
+// Turns a stored label back into a type, throwing if the label is unknown.
 TransactionType transactionTypeFromString(const std::string& label) {
     if (label == "StockIn") {
         return TransactionType::StockIn;

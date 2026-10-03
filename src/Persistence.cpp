@@ -7,10 +7,12 @@
 
 namespace {
 
+// True if the field has a comma, quote, backslash, or newline, so it must be quoted.
 bool needsQuoting(const std::string& field) {
     return field.find_first_of(",\"\\\n") != std::string::npos;
 }
 
+// Returns the field ready for writing, quoted and escaped only when needed.
 std::string escapeField(const std::string& field) {
     if (!needsQuoting(field)) {
         return field;
@@ -35,6 +37,7 @@ std::string escapeField(const std::string& field) {
     return out;
 }
 
+// Turns one line from the file back into its separate fields, undoing the quoting.
 std::vector<std::string> splitFields(const std::string& line) {
     std::vector<std::string> fields;
     std::string current;
@@ -73,6 +76,7 @@ std::vector<std::string> splitFields(const std::string& line) {
     return fields;
 }
 
+// Joins fields into one line for the file, quoting and escaping any that need it.
 std::string joinFields(const std::vector<std::string>& fields) {
     std::string line;
     for (std::size_t i = 0; i < fields.size(); ++i) {
@@ -84,6 +88,8 @@ std::string joinFields(const std::vector<std::string>& fields) {
     return line;
 }
 
+// Reads the file line by line, parsing each line into an entity. A missing
+// file gives an empty list, and a broken line is skipped with a warning.
 template <typename T, typename ParseFn>
 std::vector<T> loadEntities(const std::string& path, ParseFn parseLine) {
     std::vector<T> result;
@@ -109,6 +115,8 @@ std::vector<T> loadEntities(const std::string& path, ParseFn parseLine) {
     return result;
 }
 
+// Writes every entity to the file as one formatted line each, replacing the
+// old contents entirely.
 template <typename T, typename FormatFn>
 void saveEntities(const std::string& path, const std::vector<T>& entities, FormatFn formatLine) {
     std::ofstream out(path, std::ios::trunc);
@@ -124,6 +132,7 @@ void saveEntities(const std::string& path, const std::vector<T>& entities, Forma
 
 namespace Persistence {
 
+// Reads the products file and turns each line back into a Product.
 std::vector<Product> loadProducts(const std::string& path) {
     return loadEntities<Product>(path, [](const std::string& line, Product& p) {
         auto f = splitFields(line);
@@ -146,6 +155,7 @@ std::vector<Product> loadProducts(const std::string& path) {
     });
 }
 
+// Writes all products to the file, one per line.
 void saveProducts(const std::string& path, const std::vector<Product>& products) {
     saveEntities(path, products, [](const Product& p) {
         return joinFields({
@@ -156,6 +166,7 @@ void saveProducts(const std::string& path, const std::vector<Product>& products)
     });
 }
 
+// Reads the suppliers file and turns each line back into a Supplier.
 std::vector<Supplier> loadSuppliers(const std::string& path) {
     return loadEntities<Supplier>(path, [](const std::string& line, Supplier& s) {
         auto f = splitFields(line);
@@ -169,12 +180,14 @@ std::vector<Supplier> loadSuppliers(const std::string& path) {
     });
 }
 
+// Writes all suppliers to the file, one per line.
 void saveSuppliers(const std::string& path, const std::vector<Supplier>& suppliers) {
     saveEntities(path, suppliers, [](const Supplier& s) {
         return joinFields({s.id, s.name, s.contact});
     });
 }
 
+// Reads the transactions file and turns each line back into a Transaction.
 std::vector<Transaction> loadTransactions(const std::string& path) {
     return loadEntities<Transaction>(path, [](const std::string& line, Transaction& t) {
         auto f = splitFields(line);
@@ -195,6 +208,7 @@ std::vector<Transaction> loadTransactions(const std::string& path) {
     });
 }
 
+// Writes all transactions to the file, one per line.
 void saveTransactions(const std::string& path, const std::vector<Transaction>& transactions) {
     saveEntities(path, transactions, [](const Transaction& t) {
         return joinFields({

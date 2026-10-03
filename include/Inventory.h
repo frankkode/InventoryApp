@@ -26,6 +26,7 @@ public:
 
     Inventory(std::string productsPath, std::string suppliersPath, std::string transactionsPath);
 
+    // Read-only views of the stored collections, for display only.
     const std::vector<Product>& products() const { return products_; }
     const std::vector<Supplier>& suppliers() const { return suppliers_; }
     const std::vector<Transaction>& transactions() const { return transactions_; }

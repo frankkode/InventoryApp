@@ -9,6 +9,7 @@
 
 namespace {
 
+// Returns a lowercase copy of a string, so we can compare without caring about case.
 std::string toLower(const std::string& s) {
     std::string out = s;
     std::transform(out.begin(), out.end(), out.begin(),
@@ -16,6 +17,7 @@ std::string toLower(const std::string& s) {
     return out;
 }
 
+// Returns the current date and time as "YYYY-MM-DD HH:MM:SS" for new transactions.
 std::string currentTimestamp() {
     std::time_t now = std::time(nullptr);
     std::tm tmBuf{};
@@ -31,6 +33,7 @@ std::string currentTimestamp() {
 
 }  // namespace
 
+// Loads the three data files into memory and rebuilds the SKU lookup index.
 Inventory::Inventory(std::string productsPath, std::string suppliersPath, std::string transactionsPath)
     : productsPath_(std::move(productsPath)),
       suppliersPath_(std::move(suppliersPath)),
@@ -41,6 +44,7 @@ Inventory::Inventory(std::string productsPath, std::string suppliersPath, std::s
     rebuildSkuIndex();
 }
 
+// Wipes the SKU index and rebuilds it from the current product list.
 void Inventory::rebuildSkuIndex() {
     skuIndex_.clear();
     for (std::size_t i = 0; i < products_.size(); ++i) {
@@ -48,6 +52,7 @@ void Inventory::rebuildSkuIndex() {
     }
 }
 
+// Returns a pointer to the product with this SKU, or nullptr if there is none.
 const Product* Inventory::findProduct(const std::string& sku) const {
     auto it = skuIndex_.find(sku);
     if (it == skuIndex_.end()) {
@@ -56,6 +61,7 @@ const Product* Inventory::findProduct(const std::string& sku) const {
     return &products_[it->second];
 }
 
+// Returns a pointer to the supplier with this ID, or nullptr if there is none.
 const Supplier* Inventory::findSupplier(const std::string& id) const {
     for (const auto& supplier : suppliers_) {
         if (supplier.id == id) {
@@ -65,6 +71,7 @@ const Supplier* Inventory::findSupplier(const std::string& id) const {
     return nullptr;
 }
 
+// Validates a new product, stores it, and saves the products file.
 void Inventory::addProduct(const Product& product) {
     if (!Product::isValidSku(product.sku)) {
         throw std::invalid_argument("invalid SKU");
@@ -83,6 +90,7 @@ void Inventory::addProduct(const Product& product) {
     saveProducts();
 }
 
+// Replaces every field of a product except its SKU, then saves the file.
 void Inventory::editProduct(const std::string& sku, const Product& updated) {
     auto it = skuIndex_.find(sku);
     if (it == skuIndex_.end()) {
@@ -101,6 +109,7 @@ void Inventory::editProduct(const std::string& sku, const Product& updated) {
     saveProducts();
 }
 
+// Deletes the product with this SKU and saves the products file.
 void Inventory::removeProduct(const std::string& sku) {
     auto it = skuIndex_.find(sku);
     if (it == skuIndex_.end()) {
@@ -111,6 +120,7 @@ void Inventory::removeProduct(const std::string& sku) {
     saveProducts();
 }
 
+// Validates a new supplier, stores it, and saves the suppliers file.
 void Inventory::addSupplier(const Supplier& supplier) {
     if (!Supplier::isValidSupplierId(supplier.id)) {
         throw std::invalid_argument("invalid supplier id");
@@ -122,6 +132,7 @@ void Inventory::addSupplier(const Supplier& supplier) {
     saveSuppliers();
 }
 
+// Deletes a supplier, unless a product still references it.
 void Inventory::removeSupplier(const std::string& id) {
     auto it = std::find_if(suppliers_.begin(), suppliers_.end(),
                             [&id](const Supplier& s) { return s.id == id; });
@@ -137,6 +148,7 @@ void Inventory::removeSupplier(const std::string& id) {
     saveSuppliers();
 }
 
+// Logs a stock movement, updates the product's quantity, and saves both files.
 Transaction Inventory::recordMovement(const std::string& productSku, TransactionType type,
                                        int quantity, const std::string& note) {
     auto it = skuIndex_.find(productSku);
@@ -177,6 +189,7 @@ Transaction Inventory::recordMovement(const std::string& productSku, Transaction
     return transaction;
 }
 
+// Finds products whose name or category contains the query, ignoring case.
 std::vector<Product> Inventory::search(const std::string& query) const {
     std::string needle = toLower(query);
     std::vector<Product> results;
@@ -189,6 +202,7 @@ std::vector<Product> Inventory::search(const std::string& query) const {
     return results;
 }
 
+// Returns a sorted copy of the product list, leaving the stored order alone.
 std::vector<Product> Inventory::sortedProducts(SortField field, bool ascending) const {
     std::vector<Product> result = products_;
     std::sort(result.begin(), result.end(), [field, ascending](const Product& a, const Product& b) {
@@ -209,6 +223,7 @@ std::vector<Product> Inventory::sortedProducts(SortField field, bool ascending) 
     return result;
 }
 
+// Each of these helpers writes its collection back to its data file.
 void Inventory::saveProducts() const { Persistence::saveProducts(productsPath_, products_); }
 void Inventory::saveSuppliers() const { Persistence::saveSuppliers(suppliersPath_, suppliers_); }
 void Inventory::saveTransactions() const { Persistence::saveTransactions(transactionsPath_, transactions_); }

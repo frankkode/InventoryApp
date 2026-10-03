@@ -80,6 +80,7 @@ std::string pickImageFile() {
     return picked != nullptr ? std::string(picked) : std::string();
 }
 
+// Formats a price with two decimals, for showing in text fields.
 std::string formatPrice(double value) {
     char buffer[32];
     std::snprintf(buffer, sizeof(buffer), "%.2f", value);
@@ -116,6 +117,7 @@ std::string generateSupplierId(const Inventory& inv) {
     return std::string(buffer);
 }
 
+// Sets the window's colors and spacing to the app's own look.
 void applyTheme() {
     ImGuiStyle& style = ImGui::GetStyle();
     style.WindowRounding = 6.0f;
@@ -182,6 +184,7 @@ struct MovementForm {
     std::string note;
 };
 
+// Copies a product's current values into the edit form before the popup opens.
 void beginEditProduct(EditProductForm& form, const Product& p) {
     form.originalSku = p.sku;
     form.name = p.name;
@@ -193,6 +196,7 @@ void beginEditProduct(EditProductForm& form, const Product& p) {
     form.imagePath = p.imagePath;
 }
 
+// Shows the image path box, a Browse button, and a small preview of the photo.
 void drawImagePicker(const char* idSuffix, std::string& imagePath) {
     ImGui::InputText((std::string("Image path##") + idSuffix).c_str(), &imagePath);
     ImGui::SameLine();
@@ -212,6 +216,8 @@ void drawImagePicker(const char* idSuffix, std::string& imagePath) {
     }
 }
 
+// Draws the whole Products tab: the add form, the product table, and the
+// edit/remove popups.
 void drawProductsTab(Inventory& inv, AddProductForm& addForm, EditProductForm& editForm,
                       std::string& pendingRemoveSku, StatusMessage& status) {
     bool openEditPopup = false;
@@ -371,6 +377,8 @@ void drawProductsTab(Inventory& inv, AddProductForm& addForm, EditProductForm& e
     }
 }
 
+// Draws the whole Suppliers tab: the add form, the supplier table, and the
+// remove popup.
 void drawSuppliersTab(Inventory& inv, AddSupplierForm& form, std::string& pendingRemoveSupplierId,
                        StatusMessage& status) {
     bool openRemoveSupplierPopup = false;
@@ -452,6 +460,7 @@ void drawSuppliersTab(Inventory& inv, AddSupplierForm& form, std::string& pendin
     }
 }
 
+// Draws the form for recording a stock movement.
 void drawMovementTab(Inventory& inv, MovementForm& form, StatusMessage& status) {
     ImGui::TextUnformatted("Record a stock movement");
     ImGui::InputText("Product SKU##mv", &form.sku);
@@ -476,6 +485,7 @@ void drawMovementTab(Inventory& inv, MovementForm& form, StatusMessage& status) 
     }
 }
 
+// Draws the table showing every recorded movement.
 void drawTransactionsTab(const Inventory& inv) {
     ImGui::TextUnformatted("Transaction history");
     if (ImGui::BeginTable("transactions", 5, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
@@ -504,6 +514,7 @@ void drawTransactionsTab(const Inventory& inv) {
 
 }  // namespace
 
+// Opens the window, runs the main loop, and cleans everything up on close.
 int main() {
     glfwSetErrorCallback([](int error, const char* description) {
         std::fprintf(stderr, "GLFW error %d: %s\n", error, description);

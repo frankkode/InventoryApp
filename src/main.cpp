@@ -16,6 +16,7 @@
 
 namespace {
 
+// Prints the prompt and returns whatever the user types (exits on end of input).
 std::string readLine(const std::string& prompt) {
     std::cout << prompt;
     std::string line;
@@ -26,6 +27,7 @@ std::string readLine(const std::string& prompt) {
     return line;
 }
 
+// Keeps asking until the user types a whole number, then returns it.
 int readInt(const std::string& prompt) {
     while (true) {
         std::string line = readLine(prompt);
@@ -41,6 +43,7 @@ int readInt(const std::string& prompt) {
     }
 }
 
+// Keeps asking until the user types a number, then returns it.
 double readDouble(const std::string& prompt) {
     while (true) {
         std::string line = readLine(prompt);
@@ -56,6 +59,7 @@ double readDouble(const std::string& prompt) {
     }
 }
 
+// Prints the product list as a table, or "(no products)" if it is empty.
 void printProducts(const std::vector<Product>& products) {
     if (products.empty()) {
         std::cout << "(no products)\n";
@@ -73,6 +77,7 @@ void printProducts(const std::vector<Product>& products) {
     }
 }
 
+// Walks the user through entering a new product and adds it.
 void handleAddProduct(Inventory& inv) {
     Product p;
     p.sku = readLine("SKU: ");
@@ -91,6 +96,7 @@ void handleAddProduct(Inventory& inv) {
     }
 }
 
+// Asks for a SKU, lets the user change each field (blank keeps the old value), and saves.
 void handleEditProduct(Inventory& inv) {
     std::string sku = readLine("SKU to edit: ");
     const Product* existing = inv.findProduct(sku);
@@ -123,6 +129,7 @@ void handleEditProduct(Inventory& inv) {
     }
 }
 
+// Asks for a SKU and removes that product from the inventory.
 void handleRemoveProduct(Inventory& inv) {
     std::string sku = readLine("SKU to remove: ");
     try {
@@ -133,6 +140,7 @@ void handleRemoveProduct(Inventory& inv) {
     }
 }
 
+// Lists all products, or only the ones matching a search word.
 void handleListOrSearch(const Inventory& inv) {
     std::string query = readLine("Search text (blank to list all): ");
     if (query.empty()) {
@@ -142,6 +150,7 @@ void handleListOrSearch(const Inventory& inv) {
     }
 }
 
+// Asks what to sort by and in which order, then prints the sorted list.
 void handleSort(const Inventory& inv) {
     std::cout << "Sort by: 1) Name  2) Category  3) Unit price  4) Quantity on hand  5) Reorder threshold\n";
     int choice = readInt("Choice: ");
@@ -161,6 +170,7 @@ void handleSort(const Inventory& inv) {
     printProducts(inv.sortedProducts(field, ascending));
 }
 
+// Walks the user through entering a new supplier and adds it.
 void handleAddSupplier(Inventory& inv) {
     Supplier s;
     s.id = readLine("Supplier ID: ");
@@ -174,6 +184,7 @@ void handleAddSupplier(Inventory& inv) {
     }
 }
 
+// Prints every supplier with its contact details.
 void handleListSuppliers(const Inventory& inv) {
     const auto& suppliers = inv.suppliers();
     if (suppliers.empty()) {
@@ -185,6 +196,7 @@ void handleListSuppliers(const Inventory& inv) {
     }
 }
 
+// Asks for a supplier ID and removes it, if no product uses it.
 void handleRemoveSupplier(Inventory& inv) {
     std::string id = readLine("Supplier ID to remove: ");
     try {
@@ -195,6 +207,7 @@ void handleRemoveSupplier(Inventory& inv) {
     }
 }
 
+// Asks for the details of a stock movement and records it.
 void handleRecordMovement(Inventory& inv) {
     std::string sku = readLine("Product SKU: ");
     std::cout << "Type: 1) Stock in  2) Stock out  3) Adjustment (positive correction)\n";
@@ -219,6 +232,7 @@ void handleRecordMovement(Inventory& inv) {
     }
 }
 
+// Prints the movement log, either all of it or just one product's.
 void handleTransactionHistory(const Inventory& inv) {
     std::string sku = readLine("Filter by SKU (blank for all): ");
     for (const auto& t : inv.transactions()) {
@@ -230,6 +244,7 @@ void handleTransactionHistory(const Inventory& inv) {
     }
 }
 
+// Prints either the full stock list or just the items that need reordering.
 void handleReports(const Inventory& inv) {
     std::cout << "Reports: 1) Current stock  2) Low stock\n";
     int choice = readInt("Choice: ");
@@ -250,6 +265,7 @@ void handleReports(const Inventory& inv) {
 
 }  // namespace
 
+// Starts the text menu and keeps handling choices until the user quits.
 int main() {
     Inventory inventory("products.dat", "suppliers.dat", "transactions.dat");
 

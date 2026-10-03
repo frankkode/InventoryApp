@@ -18,6 +18,7 @@ namespace {
 int checksRun = 0;
 int checksPassed = 0;
 
+// Counts one check and prints PASS or FAIL along with the description.
 void check(bool condition, const std::string& description) {
     ++checksRun;
     if (condition) {
@@ -38,6 +39,7 @@ void removeTestFiles(const std::string& productsPath, const std::string& supplie
     std::remove(transactionsPath.c_str());
 }
 
+// Builds a Product with sensible defaults so tests stay short.
 Product makeProduct(const std::string& sku, const std::string& name = "Widget",
                      double price = 9.99, int quantity = 10, int reorder = 2,
                      const std::string& supplierId = "") {
@@ -52,6 +54,7 @@ Product makeProduct(const std::string& sku, const std::string& name = "Widget",
     return p;
 }
 
+// Checks that missing data files start the app empty instead of crashing.
 void testEmptyInventoryOnMissingFiles() {
     removeTestFiles("t_products.dat", "t_suppliers.dat", "t_transactions.dat");
     Inventory inv("t_products.dat", "t_suppliers.dat", "t_transactions.dat");
@@ -60,6 +63,7 @@ void testEmptyInventoryOnMissingFiles() {
     check(inv.transactions().empty(), "a missing transactions file loads as an empty inventory");
 }
 
+// Checks that bad products (duplicate SKU, blank SKU, unknown supplier) are refused.
 void testAddProductValidation() {
     removeTestFiles("t_products.dat", "t_suppliers.dat", "t_transactions.dat");
     Inventory inv("t_products.dat", "t_suppliers.dat", "t_transactions.dat");
@@ -92,6 +96,7 @@ void testAddProductValidation() {
     check(rejectedUnknownSupplier, "adding a product with an unknown supplierId is rejected");
 }
 
+// Checks editing fields, refusing a SKU change, and removing a product.
 void testEditAndRemoveProduct() {
     removeTestFiles("t_products.dat", "t_suppliers.dat", "t_transactions.dat");
     Inventory inv("t_products.dat", "t_suppliers.dat", "t_transactions.dat");
@@ -126,6 +131,7 @@ void testEditAndRemoveProduct() {
     check(rejectedUnknownRemove, "removing an unknown SKU is rejected");
 }
 
+// Checks adding suppliers, rejecting duplicates, and refusing to remove one still in use.
 void testSupplierLifecycleAndProtection() {
     removeTestFiles("t_products.dat", "t_suppliers.dat", "t_transactions.dat");
     Inventory inv("t_products.dat", "t_suppliers.dat", "t_transactions.dat");
@@ -160,6 +166,7 @@ void testSupplierLifecycleAndProtection() {
     check(inv.findSupplier("SUP1") == nullptr, "a supplier no longer referenced can be removed");
 }
 
+// Checks stock in/out/adjustment quantities and the bad inputs that must be refused.
 void testStockMovements() {
     removeTestFiles("t_products.dat", "t_suppliers.dat", "t_transactions.dat");
     Inventory inv("t_products.dat", "t_suppliers.dat", "t_transactions.dat");
@@ -202,6 +209,7 @@ void testStockMovements() {
     check(rejectedUnknownSku, "recording a movement against an unknown SKU is rejected");
 }
 
+// Checks case-insensitive search and sorting in both orders.
 void testSearchAndSort() {
     removeTestFiles("t_products.dat", "t_suppliers.dat", "t_transactions.dat");
     Inventory inv("t_products.dat", "t_suppliers.dat", "t_transactions.dat");
@@ -235,6 +243,7 @@ void testSearchAndSort() {
     check(inv.products().size() == 3, "sortedProducts does not reorder underlying storage");
 }
 
+// Saves some data, reloads it, and checks nothing changed, even with commas and quotes.
 void testPersistenceRoundTrip() {
     removeTestFiles("t_products.dat", "t_suppliers.dat", "t_transactions.dat");
     {
@@ -263,6 +272,7 @@ void testPersistenceRoundTrip() {
     removeTestFiles("t_products.dat", "t_suppliers.dat", "t_transactions.dat");
 }
 
+// Checks that a broken line in the file is skipped and the rest still loads.
 void testMalformedLineIsSkipped() {
     removeTestFiles("t_products.dat", "t_suppliers.dat", "t_transactions.dat");
     {
@@ -279,6 +289,7 @@ void testMalformedLineIsSkipped() {
 
 }  // namespace
 
+// Runs every test and reports how many checks passed.
 int main() {
     testEmptyInventoryOnMissingFiles();
     testAddProductValidation();
