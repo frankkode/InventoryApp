@@ -10,17 +10,15 @@
 // Persistence: all file I/O for the three entity types, isolated here so
 // neither the logic layer nor the CLI need to know the on-disk format.
 //
-// File format: one entity per line, fields separated by commas. A field is
-// wrapped in double quotes only when it contains a comma, a quote, a
-// backslash, or a newline; inside a quoted field, a backslash and a double
-// quote are escaped as \\ and \", and an embedded newline as \n, the same
-// escaping principle JSON string literals use. This keeps the common case
-// (no special characters) readable as plain text, while a supplier name or
-// note that happens to contain a comma still round-trips exactly.
+// File format: one entity per line, comma-separated fields. A field is
+// quoted only when it contains a comma, quote, backslash, or newline;
+// inside quotes, \\ and \" escape themselves and \n is a literal
+// newline, the same idea JSON string literals use. Plain fields stay
+// unquoted so the common case still reads as plain text.
 //
-// A missing file is not an error, load simply returns an empty vector,
-// which is what a first run looks like. A line that fails to parse is
-// skipped with a warning on stderr rather than aborting the whole load.
+// A missing file just loads as an empty vector (a normal first run), and
+// a line that fails to parse is skipped with a warning instead of
+// aborting the whole load.
 namespace Persistence {
 
 std::vector<Product> loadProducts(const std::string& path);

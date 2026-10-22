@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cmath>
 #include <ctime>
 #include <stdexcept>
 
@@ -82,8 +83,11 @@ void Inventory::addProduct(const Product& product) {
     if (!product.supplierId.empty() && findSupplier(product.supplierId) == nullptr) {
         throw std::invalid_argument("unknown supplierId: " + product.supplierId);
     }
-    if (product.unitPrice < 0.0 || product.quantityOnHand < 0 || product.reorderThreshold < 0) {
-        throw std::invalid_argument("price, quantity, and reorder threshold must be non-negative");
+    if (!std::isfinite(product.unitPrice) || product.unitPrice < 0.0 ||
+        product.quantityOnHand < 0 || product.reorderThreshold < 0) {
+        throw std::invalid_argument(
+            "price must be a finite, non-negative number, and quantity and reorder threshold "
+            "must be non-negative");
     }
     products_.push_back(product);
     skuIndex_[product.sku] = products_.size() - 1;
@@ -102,8 +106,11 @@ void Inventory::editProduct(const std::string& sku, const Product& updated) {
     if (!updated.supplierId.empty() && findSupplier(updated.supplierId) == nullptr) {
         throw std::invalid_argument("unknown supplierId: " + updated.supplierId);
     }
-    if (updated.unitPrice < 0.0 || updated.quantityOnHand < 0 || updated.reorderThreshold < 0) {
-        throw std::invalid_argument("price, quantity, and reorder threshold must be non-negative");
+    if (!std::isfinite(updated.unitPrice) || updated.unitPrice < 0.0 ||
+        updated.quantityOnHand < 0 || updated.reorderThreshold < 0) {
+        throw std::invalid_argument(
+            "price must be a finite, non-negative number, and quantity and reorder threshold "
+            "must be non-negative");
     }
     products_[it->second] = updated;
     saveProducts();

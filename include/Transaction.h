@@ -26,9 +26,8 @@ struct Transaction {
     std::string productSku;      // references Product::sku by value, not by pointer
     TransactionType type = TransactionType::StockIn;
     int quantityDelta = 0;       // signed: positive for StockIn, negative for
-                                  // StockOut, either sign for Adjustment. The
-                                  // logic layer (added in a later commit) is
-                                  // responsible for deriving this from a
-                                  // non-negative user-entered quantity.
+                                  // StockOut, either sign for Adjustment; derived
+                                  // by the logic layer from a non-negative
+                                  // user-entered quantity.
     std::string note;
 };

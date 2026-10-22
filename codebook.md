@@ -36,7 +36,11 @@ escaped CSV-like format, one record per line, fields separated by commas,
 with quoting/escaping for embedded commas and quotes. `Persistence` saves
 after every mutating call and rebuilds the in-memory vectors and indexes on
 load; a missing file is treated as an empty collection, and a malformed
-line is skipped with a warning rather than aborting the load.
+line is skipped with a warning rather than aborting the load. Since the
+finalization pass, a save writes to a `<file>.tmp` file first and only then
+renames it over the real file (`std::rename`, a single atomic filesystem
+operation on the platforms this targets), so a crash or power loss mid-save
+leaves the previous, intact file in place instead of a half-written one.
 
 ## Validation rules (enforced by `Inventory`, exercised by the test suite and the GUI)
 
@@ -45,7 +49,10 @@ line is skipped with a warning rather than aborting the load.
 - A product's `supplierId` must reference an existing supplier.
 - Numeric fields (`unitPrice`, `quantityOnHand`, `reorderThreshold`) must
   parse as non-negative numbers; invalid input is caught and reported as a
-  status message rather than crashing either interface.
+  status message rather than crashing either interface. Since the
+  finalization pass, `unitPrice` is also checked with `std::isfinite`, so a
+  value that parses as `inf` or `nan` (which would otherwise pass a plain
+  `>= 0` comparison) is rejected the same way a negative price is.
 - A stock-out movement that would drop `quantityOnHand` below zero is
   rejected.
 - A supplier cannot be removed while any product still references it

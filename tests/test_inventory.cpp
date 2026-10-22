@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -94,6 +95,22 @@ void testAddProductValidation() {
         rejectedUnknownSupplier = true;
     }
     check(rejectedUnknownSupplier, "adding a product with an unknown supplierId is rejected");
+
+    bool rejectedNonFinitePrice = false;
+    try {
+        inv.addProduct(makeProduct("SKU3", "Bad Price", std::numeric_limits<double>::infinity()));
+    } catch (const std::invalid_argument&) {
+        rejectedNonFinitePrice = true;
+    }
+    check(rejectedNonFinitePrice, "adding a product with an infinite unit price is rejected");
+
+    bool rejectedNanPrice = false;
+    try {
+        inv.addProduct(makeProduct("SKU4", "NaN Price", std::numeric_limits<double>::quiet_NaN()));
+    } catch (const std::invalid_argument&) {
+        rejectedNanPrice = true;
+    }
+    check(rejectedNanPrice, "adding a product with a NaN unit price is rejected");
 }
 
 // Checks editing fields, refusing a SKU change, and removing a product.
@@ -268,6 +285,10 @@ void testPersistenceRoundTrip() {
           "a field containing embedded quotes round-trips exactly");
     check(reloaded.findProduct("SKU1")->quantityOnHand == 15,
           "quantityOnHand reflects the recorded movement after reload");
+
+    std::ifstream leftoverTemp("t_products.dat.tmp");
+    check(!leftoverTemp.good(),
+          "saving leaves no stray .tmp file behind (the atomic rename completed)");
 
     removeTestFiles("t_products.dat", "t_suppliers.dat", "t_transactions.dat");
 }

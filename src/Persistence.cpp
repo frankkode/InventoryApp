@@ -1,6 +1,7 @@
 #include "Persistence.h"
 
 #include <cstddef>
+#include <cstdio>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
@@ -115,16 +116,27 @@ std::vector<T> loadEntities(const std::string& path, ParseFn parseLine) {
     return result;
 }
 
-// Writes every entity to the file as one formatted line each, replacing the
-// old contents entirely.
+// Writes every entity to a temporary file, then atomically renames it over
+// the real one. A crash or power loss mid-write leaves the temp file
+// incomplete but the previous, still-valid file untouched, instead of a
+// half-written data file.
 template <typename T, typename FormatFn>
 void saveEntities(const std::string& path, const std::vector<T>& entities, FormatFn formatLine) {
-    std::ofstream out(path, std::ios::trunc);
-    if (!out) {
-        throw std::runtime_error("cannot open " + path + " for writing");
+    std::string tempPath = path + ".tmp";
+    {
+        std::ofstream out(tempPath, std::ios::trunc);
+        if (!out) {
+            throw std::runtime_error("cannot open " + tempPath + " for writing");
+        }
+        for (const auto& entity : entities) {
+            out << formatLine(entity) << '\n';
+        }
+        if (!out) {
+            throw std::runtime_error("failed while writing " + tempPath);
+        }
     }
-    for (const auto& entity : entities) {
-        out << formatLine(entity) << '\n';
+    if (std::rename(tempPath.c_str(), path.c_str()) != 0) {
+        throw std::runtime_error("cannot replace " + path + " with the updated data");
     }
 }
 
